@@ -12,7 +12,7 @@ import UIKit
 class TestPresentViewController: UIViewController {
     var presentConfig: PresentConfig!
     
-    required init(presentingVC: UIViewController) {
+    init() {
         super.init(nibName: nil, bundle: nil)
         presentConfig = PresentConfig(self)
     }

@@ -118,7 +118,8 @@ extension PresentConfig: UIViewControllerTransitioningDelegate, UIViewController
         let fromView: UIView! = transitionContext.view(forKey: .from)
         let toView: UIView! = transitionContext.view(forKey: .to)
         
-        let isPresenting = fromVC == self.presentingVC
+        let isPresenting = toVC == self.presentedVC
+//        let isPresenting = fromVC == self.presentingVC
         //        let fromViewInitFrame = transitionContext.initialFrame(for: fromVC!)
         //        var fromViewFinalFrame = transitionContext.finalFrame(for: fromVC!)
         //        var toViewInitFrame = transitionContext.initialFrame(for: toVC!)

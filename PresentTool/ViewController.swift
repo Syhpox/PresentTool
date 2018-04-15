@@ -23,7 +23,7 @@ class ViewController: UIViewController {
     }
     
     @objc private func btnClick() {
-        let vc = TestPresentViewController.init(presentingVC: self)
+        let vc = TestPresentViewController()
         self.present(vc, animated: true, completion: nil)
     }
 
