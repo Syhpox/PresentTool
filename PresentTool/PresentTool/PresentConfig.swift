@@ -9,7 +9,7 @@
 import UIKit
 
 /// 自定义弹出动画接口协议
-protocol PresentConfigAnimationProtocol {
+public protocol PresentConfigAnimationProtocol {
     /// 刚弹出  动画初始状态
     func animatedBegin()
     /// 刚弹出  动画末状态
@@ -19,7 +19,7 @@ protocol PresentConfigAnimationProtocol {
 }
 
 /// 动画样式
-enum PresentConfigAnimation {
+public enum PresentConfigAnimation {
     /// 系统Alert样式
     case alert
     /// 系统actionSheet样式
@@ -32,23 +32,23 @@ enum PresentConfigAnimation {
     case custom(PresentConfigAnimationProtocol)
 }
 
-class PresentConfig: NSObject {
+public class PresentConfig: NSObject {
     /// 核心视图
-    var mainView: UIView!
+    public var mainView: UIView!
     
     /// main_VC 被弹出的VC
-    var presentedVC: UIViewController!
+    fileprivate var presentedVC: UIViewController!
     ///
-    var presentingVC: UIViewController!
+    fileprivate var presentingVC: UIViewController!
     
     /// 动画类型
-    var animationType: PresentConfigAnimation = .alert
+    public var animationType: PresentConfigAnimation = .alert
     
     /// 动画持续时间
-    var duration: TimeInterval!
+    public var duration: TimeInterval!
     
     /// 强引用
-    var strongSelf: PresentConfig?
+    fileprivate var strongSelf: PresentConfig?
     
     /**
      初始化方法
@@ -59,7 +59,7 @@ class PresentConfig: NSObject {
      
      - retrun
      */
-    init(_ presented: UIViewController, type: PresentConfigAnimation = .alert, duration: TimeInterval = 0.35) {
+    public init(_ presented: UIViewController, type: PresentConfigAnimation = .alert, duration: TimeInterval = 0.35) {
         super.init()
         presented.modalPresentationStyle = .custom
         self.animationType = type
