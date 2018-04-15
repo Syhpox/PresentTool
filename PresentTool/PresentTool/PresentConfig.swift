@@ -4,21 +4,9 @@
 //
 //  Created by WZH on 2017/12/22.
 //  Copyright © 2017年 Zhihua. All rights reserved.
-//  PresentConfig v2.0
+//
 
 import UIKit
-/// required protocol
-protocol PresentConfigProtocol  {
-    var presentConfig: PresentConfig! {get set}
-    /*
-     required init(presentingVC: UIViewController) {
-     super.init(nibName: nil, bundle: nil)
-     presentConfig = PresentConfig.init(self, presentingVC: presentingVC)
-     }
-     */
-    init(presentingVC: UIViewController)
-    
-}
 
 /// 自定义弹出动画接口协议
 protocol PresentConfigAnimationProtocol {
@@ -44,21 +32,23 @@ enum PresentConfigAnimation {
     case custom(PresentConfigAnimationProtocol)
 }
 
-class PresentConfig {
+class PresentConfig: NSObject {
     /// 核心视图
     var mainView: UIView!
     
     /// main_VC 被弹出的VC
-    var mainViewController: UIViewController!
-    
-    /// present代理
-    fileprivate var delegate: PresentConfigPresentationController!
+    var presentedVC: UIViewController!
+    ///
+    var presentingVC: UIViewController!
     
     /// 动画类型
     var animationType: PresentConfigAnimation = .alert
     
     /// 动画持续时间
     var duration: TimeInterval!
+    
+    /// 强引用
+    var strongSelf: PresentConfig?
     
     /**
      初始化方法
@@ -69,10 +59,9 @@ class PresentConfig {
      
      - retrun
      */
-    init(_ mainViewController: UIViewController,presentingVC: UIViewController, type: PresentConfigAnimation = .alert, duration: TimeInterval = 0.35) {
-        self.mainViewController = mainViewController
-        self.delegate = PresentConfigPresentationController.init(presentConfig: self, presenting: presentingVC)
-        mainViewController.transitioningDelegate = delegate
+    init(_ presented: UIViewController, type: PresentConfigAnimation = .alert, duration: TimeInterval = 0.35) {
+        super.init()
+        presented.modalPresentationStyle = .custom
         self.animationType = type
         self.duration = duration
         switch type {
@@ -87,47 +76,16 @@ class PresentConfig {
         default:
             break;
         }
+        self.strongSelf = self
+        presented.transitioningDelegate = self
     }
     
     deinit {
-        print("\(type(of: self))  deinit")
+        //        print("\(type(of: self))  deinit")
     }
 }
 
-
-fileprivate class PresentConfigPresentationController: UIPresentationController, UIViewControllerTransitioningDelegate, UIViewControllerAnimatedTransitioning {
-    
-    fileprivate var bgView: UIView!
-    fileprivate weak var presentConfig: PresentConfig!
-    
-    init(presentConfig: PresentConfig, presenting presentingViewController: UIViewController?) {
-        super.init(presentedViewController: presentConfig.mainViewController, presenting: presentingViewController)
-        self.presentConfig = presentConfig
-        self.presentConfig.mainViewController.modalPresentationStyle = .custom
-    }
-    
-    override func presentationTransitionWillBegin() {
-        bgView = UIView.init(frame: (containerView?.bounds)!)
-        bgView.backgroundColor = UIColor.init(white: 0.0, alpha: 0.5)
-        containerView?.addSubview(bgView)
-        bgView.alpha = 0.0
-        presentingViewController.transitionCoordinator?.animate(alongsideTransition: {[weak self] (context) in
-            self?.bgView.alpha = 1.0
-            }, completion: { (context) in
-        })
-    }
-    
-    /// dismiss刚开始
-    override func dismissalTransitionWillBegin() {
-        self.presentingViewController.transitionCoordinator?.animate(alongsideTransition: {[weak self] (context) in
-            self?.bgView.alpha = 0.0
-            }, completion: {[weak self] (context) in
-                // 内存释放
-                self?.presentConfig.mainViewController = nil
-                self?.presentConfig.delegate = nil
-        })
-    }
-    
+extension PresentConfig: UIViewControllerTransitioningDelegate, UIViewControllerAnimatedTransitioning {
     // MARK: UIViewControllerTransitioningDelegate
     @available(iOS 2.0, *)
     public func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
@@ -139,13 +97,15 @@ fileprivate class PresentConfigPresentationController: UIPresentationController,
     }
     
     public func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
-        return self
+        self.presentedVC = presented
+        self.presentingVC = source
+        return PresentConfigPresentationController.init(presentConfig: self)
     }
     
     // MARK: UIViewControllerAnimatedTransitioning
     public func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
         // 动画时间
-        return presentConfig.duration
+        return duration
     }
     
     // This method can only  be a nop if the transition is interactive and not a percentDriven interactive transition.
@@ -158,7 +118,7 @@ fileprivate class PresentConfigPresentationController: UIPresentationController,
         let fromView: UIView! = transitionContext.view(forKey: .from)
         let toView: UIView! = transitionContext.view(forKey: .to)
         
-        let isPresenting = fromVC == self.presentingViewController
+        let isPresenting = fromVC == self.presentingVC
         //        let fromViewInitFrame = transitionContext.initialFrame(for: fromVC!)
         //        var fromViewFinalFrame = transitionContext.finalFrame(for: fromVC!)
         //        var toViewInitFrame = transitionContext.initialFrame(for: toVC!)
@@ -174,13 +134,13 @@ fileprivate class PresentConfigPresentationController: UIPresentationController,
         }
         
         // 动画时间
-        let duration = self.presentConfig.duration
-        let mainView = self.presentConfig.mainView!
-        let mainViewController = self.presentConfig.mainViewController!
-        let frameWidth = mainViewController.view.frame.width
-        let frameHeight = mainViewController.view.frame.height
+        let duration = self.duration
+        let mainView = self.mainView!
+        let presentedVC = self.presentedVC!
+        let frameWidth = presentedVC.view.frame.width
+        let frameHeight = presentedVC.view.frame.height
         
-        switch presentConfig.animationType {
+        switch animationType {
         case .alert:
             if isPresenting {
                 mainView.center = CGPoint(x: frameWidth / 2.0, y: frameHeight / 2.0)
@@ -209,7 +169,7 @@ fileprivate class PresentConfigPresentationController: UIPresentationController,
         
         // 动画中
         UIView.animate(withDuration: duration ?? 0.35, animations: {
-            switch self.presentConfig.animationType {
+            switch self.animationType {
             case .alert:
                 (isPresenting ? toView : fromView)?.alpha = isPresenting ? 1.0 : 0.0
                 if isPresenting {
@@ -244,6 +204,41 @@ fileprivate class PresentConfigPresentationController: UIPresentationController,
         }
         
     }
+}
+
+
+fileprivate class PresentConfigPresentationController: UIPresentationController {
+    
+    fileprivate var bgView: UIView!
+    fileprivate weak var presentConfig: PresentConfig!
+    
+    init(presentConfig: PresentConfig) {
+        super.init(presentedViewController: presentConfig.presentedVC, presenting: presentConfig.presentingVC)
+        self.presentConfig = presentConfig
+    }
+    
+    override func presentationTransitionWillBegin() {
+        bgView = UIView.init(frame: (containerView?.bounds)!)
+        bgView.backgroundColor = UIColor.init(white: 0.0, alpha: 0.5)
+        containerView?.addSubview(bgView)
+        bgView.alpha = 0.0
+        presentingViewController.transitionCoordinator?.animate(alongsideTransition: {[weak self] (context) in
+            self?.bgView.alpha = 1.0
+            }, completion: { (context) in
+        })
+    }
+    
+    /// dismiss刚开始
+    override func dismissalTransitionWillBegin() {
+        self.presentingViewController.transitionCoordinator?.animate(alongsideTransition: {[weak self] (context) in
+            self?.bgView.alpha = 0.0
+            }, completion: {[weak self] (context) in
+                // 内存释放
+                self?.presentConfig.presentedVC = nil
+                self?.presentConfig.strongSelf = nil
+        })
+    }
+    
     
 }
 

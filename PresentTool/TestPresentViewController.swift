@@ -9,12 +9,12 @@
 import Foundation
 import UIKit
 
-class TestPresentViewController: UIViewController, PresentConfigProtocol {
+class TestPresentViewController: UIViewController {
     var presentConfig: PresentConfig!
     
     required init(presentingVC: UIViewController) {
         super.init(nibName: nil, bundle: nil)
-        presentConfig = PresentConfig.init(self, presentingVC: presentingVC)
+        presentConfig = PresentConfig(self)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -34,11 +34,11 @@ class TestPresentViewController: UIViewController, PresentConfigProtocol {
         btn.setTitle("Present", for: .normal)
         btn.backgroundColor = .brown
         mainView.addSubview(btn)
-        
+        presentConfig.mainView = mainView
         btn.addTarget(self, action: #selector(btnClick), for: .touchUpInside)
         
         // 动画类型
-        presentConfig.animationType = .toUp
+        presentConfig.animationType = .fade
         // 动画View
         presentConfig.mainView = mainView
     }
