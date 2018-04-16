@@ -20,8 +20,8 @@ public protocol PresentConfigAnimationProtocol {
 
 /// 动画样式
 public enum PresentConfigAnimation {
-    /// 系统Alert样式
-    case alert
+    /// 系统Alert样式 核心视图的centerY = 屏幕高度 * 比例系数
+    case alert(CGFloat)
     /// 系统actionSheet样式
     case actionSheet
     /// 下到上
@@ -42,7 +42,7 @@ public class PresentConfig: NSObject {
     fileprivate var presentingVC: UIViewController!
     
     /// 动画类型
-    public var animationType: PresentConfigAnimation = .alert
+    public var animationType: PresentConfigAnimation = .alert(0.3)
     
     /// 动画持续时间
     public var duration: TimeInterval!
@@ -59,7 +59,7 @@ public class PresentConfig: NSObject {
      
      - retrun
      */
-    public init(_ presented: UIViewController, type: PresentConfigAnimation = .alert, duration: TimeInterval = 0.35) {
+    public init(_ presented: UIViewController, type: PresentConfigAnimation = .alert(0.4), duration: TimeInterval = 0.35) {
         super.init()
         presented.modalPresentationStyle = .custom
         self.animationType = type
@@ -110,7 +110,7 @@ extension PresentConfig: UIViewControllerTransitioningDelegate, UIViewController
     
     // This method can only  be a nop if the transition is interactive and not a percentDriven interactive transition.
     public func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
-        let fromVC = transitionContext.viewController(forKey: .from)
+        //        let fromVC = transitionContext.viewController(forKey: .from)
         let toVC = transitionContext.viewController(forKey: .to)
         
         let containView = transitionContext.containerView
@@ -119,7 +119,7 @@ extension PresentConfig: UIViewControllerTransitioningDelegate, UIViewController
         let toView: UIView! = transitionContext.view(forKey: .to)
         
         let isPresenting = toVC == self.presentedVC
-//        let isPresenting = fromVC == self.presentingVC
+        //        let isPresenting = fromVC == self.presentingVC
         //        let fromViewInitFrame = transitionContext.initialFrame(for: fromVC!)
         //        var fromViewFinalFrame = transitionContext.finalFrame(for: fromVC!)
         //        var toViewInitFrame = transitionContext.initialFrame(for: toVC!)
@@ -142,9 +142,9 @@ extension PresentConfig: UIViewControllerTransitioningDelegate, UIViewController
         let frameHeight = presentedVC.view.frame.height
         
         switch animationType {
-        case .alert:
+        case .alert(let percent):
             if isPresenting {
-                mainView.center = CGPoint(x: frameWidth / 2.0, y: frameHeight / 2.0)
+                mainView.center = CGPoint(x: frameWidth / 2.0, y: frameHeight * percent)
                 mainView.transform = CGAffineTransform.init(scaleX: 1.3, y: 1.3)
             }
         case .actionSheet:
