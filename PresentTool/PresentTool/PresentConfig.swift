@@ -42,7 +42,7 @@ public class PresentConfig: NSObject {
     fileprivate var presentingVC: UIViewController!
     
     /// 动画类型
-    public var animationType: PresentConfigAnimation = .alert(0.3)
+    public var animationType: PresentConfigAnimation = .alert(0.4)
     
     /// 动画持续时间
     public var duration: TimeInterval!
@@ -72,9 +72,8 @@ public class PresentConfig: NSObject {
                 // Custom初始化失败
                 assertionFailure("自定义动画view非UIView类")
             }
-            break
         default:
-            break;
+            break
         }
         self.strongSelf = self
         presented.transitioningDelegate = self
@@ -199,7 +198,7 @@ extension PresentConfig: UIViewControllerTransitioningDelegate, UIViewController
                 }
             }
             
-        }) { (finish) in
+        }) { _ in
             let cancel = transitionContext.transitionWasCancelled
             transitionContext.completeTransition(!cancel)
         }
@@ -207,11 +206,10 @@ extension PresentConfig: UIViewControllerTransitioningDelegate, UIViewController
     }
 }
 
-
-fileprivate class PresentConfigPresentationController: UIPresentationController {
+private class PresentConfigPresentationController: UIPresentationController {
     
-    fileprivate var bgView: UIView!
-    fileprivate weak var presentConfig: PresentConfig!
+    private var bgView: UIView!
+    private weak var presentConfig: PresentConfig!
     
     init(presentConfig: PresentConfig) {
         super.init(presentedViewController: presentConfig.presentedVC, presenting: presentConfig.presentingVC)
@@ -223,23 +221,20 @@ fileprivate class PresentConfigPresentationController: UIPresentationController 
         bgView.backgroundColor = UIColor.init(white: 0.0, alpha: 0.5)
         containerView?.addSubview(bgView)
         bgView.alpha = 0.0
-        presentingViewController.transitionCoordinator?.animate(alongsideTransition: {[weak self] (context) in
+        presentingViewController.transitionCoordinator?.animate(alongsideTransition: {[weak self] _ in
             self?.bgView.alpha = 1.0
-            }, completion: { (context) in
+            }, completion: { _ in
         })
     }
     
     /// dismiss刚开始
     override func dismissalTransitionWillBegin() {
-        self.presentingViewController.transitionCoordinator?.animate(alongsideTransition: {[weak self] (context) in
+        self.presentingViewController.transitionCoordinator?.animate(alongsideTransition: {[weak self] _ in
             self?.bgView.alpha = 0.0
-            }, completion: {[weak self] (context) in
+            }, completion: {[weak self] _ in
                 // 内存释放
                 self?.presentConfig.presentedVC = nil
                 self?.presentConfig.strongSelf = nil
         })
     }
-    
-    
 }
-
