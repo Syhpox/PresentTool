@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F861E0BB2084FAAF00EE56E6 /* PresentTool.m in Sources */ = {isa = PBXBuildFile; fileRef = F861E0BA2084FAAF00EE56E6 /* PresentTool.m */; };
 		F8C3FBFF20693EFD00635D1A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C3FBFE20693EFD00635D1A /* AppDelegate.swift */; };
 		F8C3FC0120693EFD00635D1A /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C3FC0020693EFD00635D1A /* ViewController.swift */; };
 		F8C3FC0420693EFD00635D1A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F8C3FC0220693EFD00635D1A /* Main.storyboard */; };
@@ -38,6 +39,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		F861E0B92084FAAF00EE56E6 /* PresentTool.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PresentTool.h; sourceTree = "<group>"; };
+		F861E0BA2084FAAF00EE56E6 /* PresentTool.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PresentTool.m; sourceTree = "<group>"; };
 		F8C3FBFB20693EFD00635D1A /* PresentTool.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PresentTool.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F8C3FBFE20693EFD00635D1A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F8C3FC0020693EFD00635D1A /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -145,6 +148,8 @@
 				F8C3FC2F20693F0C00635D1A /* PresentionBaseViewController.m */,
 				F8C3FC3020693F0C00635D1A /* PresentCustomViewController.swift */,
 				F8C3FC3120693F0C00635D1A /* URLRoute-Bridging-Header.h */,
+				F861E0B92084FAAF00EE56E6 /* PresentTool.h */,
+				F861E0BA2084FAAF00EE56E6 /* PresentTool.m */,
 			);
 			path = PresentTool;
 			sourceTree = "<group>";
@@ -283,6 +288,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F861E0BB2084FAAF00EE56E6 /* PresentTool.m in Sources */,
 				F8C3FC3420693F0C00635D1A /* PresentCustomViewController.swift in Sources */,
 				F8C3FC0120693EFD00635D1A /* ViewController.swift in Sources */,
 				F8C3FBFF20693EFD00635D1A /* AppDelegate.swift in Sources */,
